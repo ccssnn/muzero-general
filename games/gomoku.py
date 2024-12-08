@@ -79,7 +79,7 @@ class MuZeroConfig:
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
         self.training_steps = 10000  # Total number of training steps (ie weights update according to a batch)
         #  self.batch_size = 512  # Number of parts of games to train on at each training step
-        self.batch_size = 32 # Number of parts of games to train on at each training step
+        self.batch_size = 64 # Number of parts of games to train on at each training step
         self.checkpoint_interval = 50  # Number of training steps before using the model for self-playing
         self.value_loss_weight = 1  # Scale the value loss to avoid overfitting of the value function, paper recommends 0.25 (See paper appendix Reanalyze)
         self.train_on_gpu = torch.cuda.is_available()  # Train on GPU if available
@@ -89,8 +89,8 @@ class MuZeroConfig:
         self.momentum = 0.9  # Used only if optimizer is SGD
 
         # Exponential learning rate schedule
-        #  self.lr_init = 0.002  # Initial learning rate
-        self.lr_init = 0.001  # Initial learning rate
+        self.lr_init = 0.002  # Initial learning rate
+        #  self.lr_init = 0.001  # Initial learning rate
         self.lr_decay_rate = 0.9  # Set it to 1 to use a constant learning rate
         self.lr_decay_steps = 10000
 
