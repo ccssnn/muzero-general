@@ -20,8 +20,6 @@ import self_play
 import shared_storage
 import trainer
 
-from log import *
-
 class MuZero:
     """
     Main class to manage MuZero.
@@ -628,7 +626,6 @@ def load_model_menu(muzero, game_name):
 
 
 if __name__ == "__main__":
-    LOGI("hello muzero")
     if len(sys.argv) == 2:
         # Train directly with: python muzero.py cartpole
         muzero = MuZero(sys.argv[1])
@@ -648,8 +645,7 @@ if __name__ == "__main__":
         ]
         for i in range(len(games)):
             print(f"{i}. {games[i]}")
-        choice = input("Enter a number to choose the game: ")
-        #  choice = '4' #NOTE: gomoku
+        choice = '4' #input("Enter a number to choose the game: ")
         valid_inputs = [str(i) for i in range(len(games))]
         while choice not in valid_inputs:
             choice = input("Invalid input, enter a number listed above: ")
@@ -675,8 +671,7 @@ if __name__ == "__main__":
             for i in range(len(options)):
                 print(f"{i}. {options[i]}")
 
-            choice = input("Enter a number to choose an action: ")
-            #  choice = '0' #NOTE: Train
+            choice = '0' #input("Enter a number to choose an action: ")
             valid_inputs = [str(i) for i in range(len(options))]
             while choice not in valid_inputs:
                 choice = input("Invalid input, enter a number listed above: ")
