@@ -20,6 +20,8 @@ import self_play
 import shared_storage
 import trainer
 
+from log import *
+
 class MuZero:
     """
     Main class to manage MuZero.
