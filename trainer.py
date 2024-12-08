@@ -7,6 +7,8 @@ import torch
 
 import models
 
+from log import *
+
 
 @ray.remote
 class Trainer:
@@ -68,6 +70,7 @@ class Trainer:
         while self.training_step < self.config.training_steps and not ray.get(
             shared_storage.get_info.remote("terminate")
         ):
+            LOGD(f"{self.training_step=}")
             index_batch, batch = ray.get(next_batch)
             next_batch = replay_buffer.get_batch.remote()
             self.update_lr()
@@ -136,6 +139,7 @@ class Trainer:
             gradient_scale_batch,
         ) = batch
 
+
         # Keep values as scalars for calculating the priorities for the prioritized replay
         target_value_scalar = numpy.array(target_value, dtype="float32")
         priorities = numpy.zeros_like(target_value_scalar)
@@ -157,6 +161,8 @@ class Trainer:
         # target_reward: batch, num_unroll_steps+1
         # target_policy: batch, num_unroll_steps+1, len(action_space)
         # gradient_scale_batch: batch, num_unroll_steps+1
+
+        #  LOGD(f"shape: {observation_batch.shape=}, {action_batch.shape=}, {target_value.shape=}")
 
         target_value = models.scalar_to_support(target_value, self.config.support_size)
         target_reward = models.scalar_to_support(

@@ -20,6 +20,7 @@ import self_play
 import shared_storage
 import trainer
 
+from log import *
 
 class MuZero:
     """
@@ -152,6 +153,8 @@ class MuZero:
         else:
             num_gpus_per_worker = 0
 
+        LOGD(f"{num_gpus_per_worker=}, {self.num_gpus=}, {self.config.num_workers=}")
+
         # Initialize workers
         self.training_worker = trainer.Trainer.options(
             num_cpus=0,
@@ -187,6 +190,8 @@ class MuZero:
             for seed in range(self.config.num_workers)
         ]
 
+        LOGD(f"{len(self.self_play_workers)=}")
+
         # Launch workers
         [
             self_play_worker.continuous_self_play.remote(
@@ -194,6 +199,9 @@ class MuZero:
             )
             for self_play_worker in self.self_play_workers
         ]
+
+        LOGD(f"Launch self worker")
+
         self.training_worker.continuous_update_weights.remote(
             self.replay_buffer_worker, self.shared_storage_worker
         )
@@ -620,6 +628,7 @@ def load_model_menu(muzero, game_name):
 
 
 if __name__ == "__main__":
+    LOGI("hello muzero")
     if len(sys.argv) == 2:
         # Train directly with: python muzero.py cartpole
         muzero = MuZero(sys.argv[1])
@@ -640,6 +649,7 @@ if __name__ == "__main__":
         for i in range(len(games)):
             print(f"{i}. {games[i]}")
         choice = input("Enter a number to choose the game: ")
+        #  choice = '4' #NOTE: gomoku
         valid_inputs = [str(i) for i in range(len(games))]
         while choice not in valid_inputs:
             choice = input("Invalid input, enter a number listed above: ")
@@ -666,6 +676,7 @@ if __name__ == "__main__":
                 print(f"{i}. {options[i]}")
 
             choice = input("Enter a number to choose an action: ")
+            #  choice = '0' #NOTE: Train
             valid_inputs = [str(i) for i in range(len(options))]
             while choice not in valid_inputs:
                 choice = input("Invalid input, enter a number listed above: ")

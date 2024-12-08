@@ -6,7 +6,7 @@ import ray
 import torch
 
 import models
-
+from log import *
 
 @ray.remote
 class SelfPlay:
@@ -29,6 +29,7 @@ class SelfPlay:
         self.model.eval()
 
     def continuous_self_play(self, shared_storage, replay_buffer, test_mode=False):
+        LOGD(f"{test_mode=}")
         while ray.get(
             shared_storage.get_info.remote("training_step")
         ) < self.config.training_steps and not ray.get(
@@ -125,6 +126,8 @@ class SelfPlay:
         if render:
             self.game.render()
 
+        #  LOGD(f"{render=}, {opponent=}, {muzero_player=}")
+
         with torch.no_grad():
             while (
                 not done and len(game_history.action_history) <= self.config.max_moves
@@ -141,6 +144,7 @@ class SelfPlay:
 
                 # Choose the action
                 if opponent == "self" or muzero_player == self.game.to_play():
+
                     root, mcts_info = MCTS(self.config).run(
                         self.model,
                         stacked_observations,
@@ -167,6 +171,7 @@ class SelfPlay:
                     )
 
                 observation, reward, done = self.game.step(action)
+                #  LOGD(f"{action=}, {reward=}, {done=}, {len(game_history.action_history)=}")
 
                 if render:
                     print(f"Played action: {self.game.action_to_string(action)}")
@@ -179,6 +184,9 @@ class SelfPlay:
                 game_history.observation_history.append(observation)
                 game_history.reward_history.append(reward)
                 game_history.to_play_history.append(self.game.to_play())
+
+        #  LOGD(f"play done, step = {len(game_history.action_history)}")
+        #  self.game.render()
 
         return game_history
 
